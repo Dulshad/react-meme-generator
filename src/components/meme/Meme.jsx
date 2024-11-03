@@ -1,19 +1,10 @@
 import styles from "./Meme.module.css"
 import memesData from "./../../memesData.js"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import classNames from 'classnames'
-import { useEffect } from 'react'
 
 const Meme = () => {
-
-    useEffect(function() {
-        fetch("https://api.imgflip.com/get_memes")
-            .then(res => res.json())
-            .then(data => setAllMemes(data.data.memes))
-        console.log('test')
-    }, [])
-
-    const [meme, setMeme] = useState({
+        const [meme, setMeme] = useState({
         topText: "",
         bottomText: "",
         randomImage: "http://i.imgflip.com/1bij.jpg"
@@ -22,6 +13,13 @@ const Meme = () => {
     const memeTextTopClasses = classNames(styles['meme-text'], styles['top'])
     const memeTextBottomClasses = classNames(styles['meme-text'], styles['bottom'])
     const [allMemes, setAllMemes] = useState(memesData);
+
+    useEffect(function() {
+        fetch("https://api.imgflip.com/get_memes")
+            .then(res => res.json())
+            .then(data => setAllMemes(data.data.memes))
+            .catch(error => console.error('Error fetching memes:', error));
+    }, [])
 
     function getRandomMemeImage() {
         const randomIndex = Math.floor(Math.random() * allMemes.length);
@@ -37,10 +35,10 @@ const Meme = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setMeme({
-            ...meme,
+        setMeme(oldMeme => ({
+            ...oldMeme,
             [name]: value
-        });
+        }));
     };
 
     return (
