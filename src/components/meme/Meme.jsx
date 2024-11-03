@@ -1,18 +1,47 @@
 import styles from "./Meme.module.css"
 import memesData from "./../../memesData.js"
 import { useState } from 'react'
+import classNames from 'classnames'
+import { useEffect } from 'react'
 
 const Meme = () => {
 
-    const [memeImage, setMemeImage] = useState("")
+    useEffect(function() {
+        fetch("https://api.imgflip.com/get_memes")
+            .then(res => res.json())
+            .then(data => setAllMemes(data.data.memes))
+        console.log('test')
+    }, [])
+
+    const [meme, setMeme] = useState({
+        topText: "",
+        bottomText: "",
+        randomImage: "http://i.imgflip.com/1bij.jpg"
+    });
+
+    const memeTextTopClasses = classNames(styles['meme-text'], styles['top'])
+    const memeTextBottomClasses = classNames(styles['meme-text'], styles['bottom'])
+    const [allMemes, setAllMemes] = useState(memesData);
 
     function getRandomMemeImage() {
-        const memesArray = memesData.data.memes;
-        const randomIndex = Math.floor(Math.random() * memesArray.length);
-        const memeImageUrl = memesArray[randomIndex].url;
+        const randomIndex = Math.floor(Math.random() * allMemes.length);
+        const memeImageUrl = allMemes[randomIndex].url;
 
-        setMemeImage(memeImageUrl)
+        setMeme(oldMeme => {
+            return {
+                ...oldMeme,
+                randomImage: memeImageUrl
+            }
+        })
     }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setMeme({
+            ...meme,
+            [name]: value
+        });
+    };
 
     return (
         <main className={styles['meme-container']}>
@@ -20,17 +49,34 @@ const Meme = () => {
                 <div className={styles['meme-input']}>
                     <div>
                         <label htmlFor="top-text">Top Text</label>
-                        <input type="text" id="top-text" name="top-text" required/>
+                        <input
+                            type="text"
+                            id="top-text"
+                            name="topText"
+                            value={meme.topText || ""}
+                            onChange={handleChange}
+                            required/>
                     </div>
                     <div>
                         <label htmlFor="bottom-text">Bottom Text</label>
-                        <input type="text" id="bottom-text" name="bottom-text" required/>
+                        <input
+                            type="text"
+                            id="bottom-text"
+                            name="bottomText"
+                            value={meme.bottomText || ""}
+                            onChange={handleChange}
+                            required/>
                     </div>
                 </div>
 
                 <button onClick={getRandomMemeImage}>Get a new meme image 🖼</button>
             </div>
-            <img src={memeImage} className={styles['meme-image']} />
+
+            <div className={styles['meme']}>
+                <img src={meme.randomImage} className={styles['meme-image']} alt="Random image of a meme"/>
+                <h2 className={memeTextTopClasses}>{meme.topText}</h2>
+                <h2 className={memeTextBottomClasses}>{meme.bottomText}</h2>
+            </div>
         </main>
     )
 }
