@@ -3,9 +3,9 @@ import trollLogo from '../../images/troll-face.png'
 
 const Header = () => {
     return (
-        <div className={styles['header-container']}>
-            <img src={trollLogo} className={styles['header-logo']} alt='logo of troll face meme' />
-            <h1 className={styles['header-title']}>Meme Generator</h1>
+        <div className={styles.header_container}>
+            <img src={trollLogo} className={styles.header_logo} alt='logo of troll face meme' />
+            <h1 className={styles.header_title}>Meme Generator</h1>
         </div>
     )
 }
